@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import type { Workout, WorkoutSession, ExerciseSession } from '../types';
+import type { WorkoutSession, ExerciseSession } from '../types';
 import Timer from './Timer';
 import { DumbbellIcon, PencilIcon, TrashIcon, ChevronDownIcon, MenuIcon, ArrowLeftIcon, ArrowRightIcon } from './icons';
 
 interface WorkoutSessionProps {
-  workout: Workout;
+  session: WorkoutSession;
+  setSession: (session: WorkoutSession) => void;
   onFinish: (session: WorkoutSession) => void;
+  onBack: () => void;
 }
 
 const REST_PERIOD_SECONDS = 90;
 
-const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFinish }) => {
-  const [session, setSession] = useState<WorkoutSession | null>(null);
+const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSession, onFinish, onBack }) => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [isUpcomingListOpen, setIsUpcomingListOpen] = useState(false);
@@ -22,24 +23,6 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
 
   const [cardioTime, setCardioTime] = useState(0);
   const [isCardioTimerRunning, setIsCardioTimerRunning] = useState(false);
-
-  useEffect(() => {
-    const initialSession: WorkoutSession = {
-      workoutId: workout.id,
-      name: workout.name,
-      startTime: Date.now(),
-      exercises: workout.exercises.map(ex => ({
-        ...ex,
-        logs: Array.from({ length: ex.isCardio ? 1 : ex.sets }, (_, i) => ({
-          id: `set-${ex.id}-${i}`,
-          weight: 0,
-          reps: 0,
-          completed: false,
-        })),
-      })),
-    };
-    setSession(initialSession);
-  }, [workout]);
   
   useEffect(() => {
     let interval: number | undefined;
@@ -80,35 +63,29 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
   };
 
   const handleLogChange = (exerciseId: string, setIndex: number, field: 'weight' | 'reps', value: number) => {
-      setSession(prevSession => {
-          if (!prevSession) return null;
-          const newExercises = prevSession.exercises.map(ex => {
-              if (ex.id === exerciseId) {
-                  const newLogs = [...ex.logs];
-                  newLogs[setIndex] = { ...newLogs[setIndex], [field]: value };
-                  return { ...ex, logs: newLogs };
-              }
-              return ex;
-          });
-          return { ...prevSession, exercises: newExercises };
+      const newExercises = session.exercises.map(ex => {
+          if (ex.id === exerciseId) {
+              const newLogs = [...ex.logs];
+              newLogs[setIndex] = { ...newLogs[setIndex], [field]: value };
+              return { ...ex, logs: newLogs };
+          }
+          return ex;
       });
+      setSession({ ...session, exercises: newExercises });
   };
 
   const handleCompleteSet = (exerciseId: string, setIndex: number) => {
     const exerciseIsCardio = session.exercises.find(ex => ex.id === exerciseId)?.isCardio;
 
-    setSession(prevSession => {
-      if (!prevSession) return null;
-      const newExercises = prevSession.exercises.map(ex => {
-        if (ex.id === exerciseId) {
-          const newLogs = [...ex.logs];
-          newLogs[setIndex].completed = true;
-          return { ...ex, logs: newLogs };
-        }
-        return ex;
-      });
-      return { ...prevSession, exercises: newExercises };
+    const newExercises = session.exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        const newLogs = [...ex.logs];
+        newLogs[setIndex].completed = true;
+        return { ...ex, logs: newLogs };
+      }
+      return ex;
     });
+    setSession({ ...session, exercises: newExercises });
 
     if (!exerciseIsCardio) {
       setIsResting(true);
@@ -117,22 +94,19 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
   
   const handleCompleteCardioSet = (exerciseId: string, setIndex: number) => {
     setIsCardioTimerRunning(false);
-    setSession(prevSession => {
-      if (!prevSession) return null;
-      const newExercises = prevSession.exercises.map(ex => {
-        if (ex.id === exerciseId) {
-          const newLogs = [...ex.logs];
-          newLogs[setIndex] = {
-            ...newLogs[setIndex],
-            completed: true,
-            reps: cardioTime, // Store elapsed seconds
-          };
-          return { ...ex, logs: newLogs };
-        }
-        return ex;
-      });
-      return { ...prevSession, exercises: newExercises };
+    const newExercises = session.exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        const newLogs = [...ex.logs];
+        newLogs[setIndex] = {
+          ...newLogs[setIndex],
+          completed: true,
+          reps: cardioTime, // Store elapsed seconds
+        };
+        return { ...ex, logs: newLogs };
+      }
+      return ex;
     });
+    setSession({ ...session, exercises: newExercises });
   };
 
   const handleNextExercise = () => {
@@ -151,13 +125,11 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
 
   const handleDeleteExercise = (exerciseId: string) => {
     if (window.confirm('Tem certeza que deseja remover este exercício da sessão? Esta ação não altera o treino salvo.')) {
-        setSession(prev => {
-            if (!prev) return null;
-            return {
-                ...prev,
-                exercises: prev.exercises.filter(ex => ex.id !== exerciseId)
-            };
-        });
+        const updatedExercises = session.exercises.filter(ex => ex.id !== exerciseId);
+        if (session.exercises.findIndex(e => e.id === exerciseId) < currentExerciseIndex) {
+            setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
+        }
+        setSession({ ...session, exercises: updatedExercises });
     }
   };
 
@@ -167,29 +139,26 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
   };
 
   const handleSaveEdit = (exerciseId: string) => {
-    setSession(prev => {
-        if (!prev) return null;
-        const newExercises = [...prev.exercises];
-        const exerciseIndex = newExercises.findIndex(ex => ex.id === exerciseId);
-        if (exerciseIndex > -1) {
-            const exercise = newExercises[exerciseIndex];
-            const newSets = parseInt(editFormData.sets, 10) || exercise.sets;
-            const newReps = editFormData.reps || exercise.reps;
-            const currentLogCount = exercise.logs.length;
-            let newLogs = [...exercise.logs];
+    const newExercises = [...session.exercises];
+    const exerciseIndex = newExercises.findIndex(ex => ex.id === exerciseId);
+    if (exerciseIndex > -1) {
+        const exercise = newExercises[exerciseIndex];
+        const newSets = parseInt(editFormData.sets, 10) || exercise.sets;
+        const newReps = editFormData.reps || exercise.reps;
+        const currentLogCount = exercise.logs.length;
+        let newLogs = [...exercise.logs];
 
-            if (newSets > currentLogCount) {
-                for (let i = 0; i < newSets - currentLogCount; i++) {
-                    newLogs.push({ id: `set-${exercise.id}-${currentLogCount + i}`, weight: 0, reps: 0, completed: false });
-                }
-            } else if (newSets < currentLogCount) {
-                newLogs = newLogs.slice(0, newSets);
+        if (newSets > currentLogCount) {
+            for (let i = 0; i < newSets - currentLogCount; i++) {
+                newLogs.push({ id: `set-${exercise.id}-${currentLogCount + i}`, weight: 0, reps: 0, completed: false });
             }
-
-            newExercises[exerciseIndex] = { ...exercise, sets: newSets, reps: newReps, logs: newLogs };
+        } else if (newSets < currentLogCount) {
+            newLogs = newLogs.slice(0, newSets);
         }
-        return { ...prev, exercises: newExercises };
-    });
+
+        newExercises[exerciseIndex] = { ...exercise, sets: newSets, reps: newReps, logs: newLogs };
+    }
+    setSession({ ...session, exercises: newExercises });
     setEditingExerciseId(null);
   };
   
@@ -211,13 +180,10 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
     const originalDraggedIndex = currentExerciseIndex + 1 + draggedItemIndex;
     const originalTargetIndex = currentExerciseIndex + 1 + targetIndex;
   
-    setSession(prev => {
-      if (!prev) return null;
-      const reorderedExercises = [...prev.exercises];
-      const [removed] = reorderedExercises.splice(originalDraggedIndex, 1);
-      reorderedExercises.splice(originalTargetIndex, 0, removed);
-      return { ...prev, exercises: reorderedExercises };
-    });
+    const reorderedExercises = [...session.exercises];
+    const [removed] = reorderedExercises.splice(originalDraggedIndex, 1);
+    reorderedExercises.splice(originalTargetIndex, 0, removed);
+    setSession({ ...session, exercises: reorderedExercises });
   
     setDraggedItemIndex(null);
   };
@@ -225,9 +191,12 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto pb-32">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-blue-400">{session.name}</h1>
+        <button onClick={onBack} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+          Salvar e Voltar
+        </button>
+        <h1 className="text-2xl md:text-3xl font-bold text-blue-400 text-center flex-grow px-4 truncate">{session.name}</h1>
         <button onClick={() => onFinish(session)} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-          Concluir Treino
+          Concluir
         </button>
       </div>
 
@@ -387,9 +356,11 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ workout, onFin
                                     <span className="text-sm text-gray-400">{ex.isCardio ? ex.reps : `${ex.sets}x${ex.reps}`}</span>
                                   </div>
                                   <div className="flex items-center gap-2 flex-shrink-0">
-                                      <button onClick={() => handleEditClick(ex)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-600/50 hover:bg-gray-600 transition duration-300">
-                                        <PencilIcon />
-                                      </button>
+                                      {!ex.isCardio && (
+                                        <button onClick={() => handleEditClick(ex)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-600/50 hover:bg-gray-600 transition duration-300">
+                                            <PencilIcon />
+                                        </button>
+                                      )}
                                       <button onClick={() => handleDeleteExercise(ex.id)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-600/50 hover:bg-gray-600 transition duration-300">
                                         <TrashIcon />
                                       </button>

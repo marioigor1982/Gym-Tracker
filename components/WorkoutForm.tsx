@@ -64,17 +64,27 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
   };
   
   const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!name.trim() || exercises.some(ex => !ex.name.trim())) {
-          alert("Por favor, selecione um tipo de treino e preencha todos os nomes dos exercícios.");
-          return;
-      }
-      onSave({
-          id: workoutToEdit?.id || crypto.randomUUID(),
-          name,
-          exercises,
-      });
-  };
+    e.preventDefault();
+    
+    // Filter out exercises that don't have a name
+    const validExercises = exercises.filter(ex => ex.name.trim() !== '');
+
+    if (!name.trim()) {
+        alert("Por favor, selecione um nome para o treino.");
+        return;
+    }
+
+    if (validExercises.length === 0) {
+        alert("Um treino deve ter pelo menos um exercício. Por favor, preencha o nome de pelo menos um exercício.");
+        return;
+    }
+
+    onSave({
+        id: workoutToEdit?.id || crypto.randomUUID(),
+        name,
+        exercises: validExercises,
+    });
+};
 
   const getSuggestions = (query: string) => {
     if (!query || query.length < 2) return [];
@@ -146,7 +156,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
                           onBlur={() => setTimeout(() => setFocusedInputIndex(null), 200)}
                           placeholder="Ex: Supino Reto"
                           className="w-full bg-gray-800 border border-gray-600 rounded-md p-2"
-                          required
+                          
                           autoComplete="off"
                         />
                         {suggestions.length > 0 && (

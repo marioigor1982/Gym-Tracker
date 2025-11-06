@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import type { Workout, WorkoutSession } from './types';
+// FIX: Import `ExerciseSession` type to resolve TypeScript error.
+import type { Workout, WorkoutSession, Exercise, ExerciseSession, SetLog } from './types';
 import WorkoutList from './components/WorkoutList';
 import WorkoutForm from './components/WorkoutForm';
 import WorkoutSessionComponent from './components/WorkoutSession';
@@ -15,10 +16,19 @@ const PREDEFINED_WORKOUT_NAMES = ['Cardio', 'Peito', 'Costas', 'Perna'];
 const App: React.FC = () => {
   const [workouts, setWorkouts] = useLocalStorage<Workout[]>('workouts', []);
   const [workoutHistory, setWorkoutHistory] = useLocalStorage<WorkoutSession[]>('workoutHistory', []);
-  const [currentView, setCurrentView] = useState<View>('list');
-  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  const [activeSession, setActiveSession] = useLocalStorage<WorkoutSession | null>('activeWorkoutSession', null);
+  
+  const [currentView, setCurrentView] = useState<View>(() => {
+    try {
+      const storedSession = window.localStorage.getItem('activeWorkoutSession');
+      return storedSession && storedSession !== 'null' ? 'session' : 'list';
+    } catch {
+      return 'list';
+    }
+  });
+
   const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
-  const [hasEntered, setHasEntered] = useState(false);
+  const [hasEntered, setHasEntered] = useState(!!activeSession); // Enter directly if session active
 
   const existingWorkoutNames = workouts.map(w => w.name);
   const availableWorkoutNames = PREDEFINED_WORKOUT_NAMES.filter(
@@ -49,7 +59,6 @@ const App: React.FC = () => {
   };
 
   const handleDeleteWorkout = (id: string) => {
-    // A confirmação agora é tratada na UI, então a gente só deleta.
     setWorkouts(prevWorkouts => prevWorkouts.filter(w => w.id !== id));
   };
 
@@ -74,12 +83,35 @@ const App: React.FC = () => {
   };
 
   const handleStartWorkout = (workout: Workout) => {
+    if (activeSession) {
+      if (!window.confirm('Já existe um treino em andamento. Deseja iniciar um novo e abandonar o atual?')) {
+        return;
+      }
+    }
     if (workout.exercises.length === 0) {
       alert("Este treino está vazio. Adicione exercícios para poder iniciá-lo.");
       handleEditWorkout(workout);
       return;
     }
-    setSelectedWorkout(workout);
+    const newSession: WorkoutSession = {
+        workoutId: workout.id,
+        name: workout.name,
+        startTime: Date.now(),
+        exercises: workout.exercises.map((ex: Exercise): ExerciseSession => ({
+            ...ex,
+            logs: Array.from({ length: ex.isCardio ? 1 : ex.sets }, (_, i): SetLog => ({
+                id: `set-${ex.id}-${i}`,
+                weight: 0,
+                reps: 0,
+                completed: false,
+            })),
+        })),
+    };
+    setActiveSession(newSession);
+    setCurrentView('session');
+  };
+
+  const handleContinueWorkout = () => {
     setCurrentView('session');
   };
 
@@ -89,21 +121,28 @@ const App: React.FC = () => {
         endTime: Date.now(),
     };
     setWorkoutHistory(prevHistory => [...prevHistory, completedSession]);
-    setSelectedWorkout(null);
+    setActiveSession(null);
     setCurrentView('list');
   };
+
+  const handleAbandonWorkout = () => {
+    if (window.confirm('Tem certeza que deseja abandonar o treino? Seu progresso nesta sessão será perdido.')) {
+        setActiveSession(null);
+        setCurrentView('list');
+    }
+  }
   
   const handleCloseForm = () => {
     setCurrentView('list');
   }
+  
+  const handleGoBackToList = () => {
+    setCurrentView('list');
+  };
 
   const handleResetApp = () => {
     if (window.confirm('Você tem certeza que deseja apagar TODOS os dados do aplicativo? Seus treinos e histórico de progresso serão perdidos permanentemente.')) {
-      // Clear localStorage
-      window.localStorage.removeItem('workouts');
-      window.localStorage.removeItem('workoutHistory');
-      
-      // Force a page reload to ensure the app starts with a clean state
+      window.localStorage.clear();
       window.location.reload();
     }
   };
@@ -111,8 +150,13 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (currentView) {
       case 'session':
-        return selectedWorkout ? (
-          <WorkoutSessionComponent workout={selectedWorkout} onFinish={handleFinishWorkout} />
+        return activeSession ? (
+          <WorkoutSessionComponent 
+            session={activeSession}
+            setSession={setActiveSession} 
+            onFinish={handleFinishWorkout}
+            onBack={handleGoBackToList}
+          />
         ) : null;
       case 'form':
         return (
@@ -132,9 +176,11 @@ const App: React.FC = () => {
           <WorkoutList
             workouts={workouts}
             onStartWorkout={handleStartWorkout}
+            onContinueWorkout={handleContinueWorkout}
             onEditWorkout={handleEditWorkout}
             onDeleteWorkout={handleDeleteWorkout}
             completedTodayIds={completedTodayIds}
+            inProgressWorkoutId={activeSession?.workoutId || null}
           />
         );
     }
@@ -181,6 +227,11 @@ const App: React.FC = () => {
                 <DumbbellIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">Meus Treinos</span>
               </button>
+            )}
+            {currentView === 'session' && activeSession && (
+                <button onClick={handleAbandonWorkout} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition duration-300">
+                    Abandonar
+                </button>
             )}
           </div>
         </nav>
