@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
-// FIX: Import `ExerciseSession` type to resolve TypeScript error.
 import type { Workout, WorkoutSession, Exercise, ExerciseSession, SetLog } from './types';
 import WorkoutList from './components/WorkoutList';
 import WorkoutForm from './components/WorkoutForm';

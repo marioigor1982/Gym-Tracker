@@ -4,7 +4,7 @@ export interface PredefinedExercise {
   imageUrl: string;
 }
 
-const placeholderUrl = (name: string) => `https://placehold.co/150x150/374151/9ca3af?text=${encodeURIComponent(name.replace(/\s/g, '+'))}`;
+const placeholderUrl = (name: string) => `https://placehold.co/150x150/374151/9ca3af?text=${encodeURIComponent(name)}`;
 
 export const predefinedExercises: PredefinedExercise[] = [
   // Treino de Peito (baseado na imagem)

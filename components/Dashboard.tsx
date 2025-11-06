@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import type { WorkoutSession } from '../types';
-import { ChartBarIcon, ClockIcon, DumbbellIcon, XIcon, TrashIcon, HeartIcon, QRIcon } from './icons';
+import { ChartBarIcon, ClockIcon, DumbbellIcon, XIcon, TrashIcon, HeartIcon, QRIcon, DownloadIcon } from './icons';
 import Calendar from './Calendar';
 import ConfirmModal from './ConfirmModal';
 import QrCodeModal from './QrCodeModal';
+import { generateWorkoutPdf } from '../utils/pdfGenerator';
+
 
 interface DashboardProps {
   history: WorkoutSession[];
@@ -162,13 +164,22 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
                                     Duração: {formatDuration((session.endTime || session.startTime) - session.startTime)}
                                 </p>
                             </div>
-                            <button 
-                                onClick={() => setQrCodeSession(session)} 
-                                className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300" 
-                                title="Gerar QR Code do Resumo"
-                            >
-                                <QRIcon />
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={() => generateWorkoutPdf(session)}
+                                    className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300" 
+                                    title="Baixar PDF do Resumo"
+                                >
+                                    <DownloadIcon />
+                                </button>
+                                <button 
+                                    onClick={() => setQrCodeSession(session)} 
+                                    className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300" 
+                                    title="Gerar QR Code do Resumo"
+                                >
+                                    <QRIcon />
+                                </button>
+                            </div>
                         </div>
                         <ul className="space-y-4">
                             {session.exercises.map(exercise => (
