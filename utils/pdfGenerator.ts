@@ -104,7 +104,7 @@ export const generateWorkoutPdf = async (session: WorkoutSession): Promise<void>
     tempContainer.innerHTML = reportHtml;
     document.body.appendChild(tempContainer);
 
-    const contentElement = document.getElementById('pdf-content');
+    const contentElement = tempContainer.querySelector('#pdf-content') as HTMLElement;
     if (!contentElement) {
         console.error('Could not find element to generate PDF from.');
         document.body.removeChild(tempContainer);
