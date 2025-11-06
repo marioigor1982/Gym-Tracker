@@ -23,6 +23,7 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
   const [cardioTime, setCardioTime] = useState(0);
   const [isCardioTimerRunning, setIsCardioTimerRunning] = useState(false);
+  const [isTransitioningNext, setIsTransitioningNext] = useState(false);
   
   useEffect(() => {
     let interval: number | undefined;
@@ -63,20 +64,29 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
   };
 
   const handleLogChange = (exerciseId: string, setIndex: number, field: 'weight' | 'reps', value: number) => {
-      const newExercises = session.exercises.map(ex => {
-          if (ex.id === exerciseId) {
-              const newLogs = [...ex.logs];
-              newLogs[setIndex] = { ...newLogs[setIndex], [field]: value };
-              return { ...ex, logs: newLogs };
+    const newExercises = session.exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        // Create a mutable copy of the logs
+        const newLogs = ex.logs.map(log => ({ ...log }));
+
+        // Update the log for the current set
+        (newLogs[setIndex] as any)[field] = value;
+
+        // Propagate the change to subsequent, incomplete sets
+        for (let i = setIndex + 1; i < newLogs.length; i++) {
+          if (!newLogs[i].completed) {
+            (newLogs[i] as any)[field] = value;
           }
-          return ex;
-      });
-      setSession({ ...session, exercises: newExercises });
+        }
+        
+        return { ...ex, logs: newLogs };
+      }
+      return ex;
+    });
+    setSession({ ...session, exercises: newExercises });
   };
 
   const handleCompleteSet = (exerciseId: string, setIndex: number) => {
-    const exerciseIsCardio = session.exercises.find(ex => ex.id === exerciseId)?.isCardio;
-
     const newExercises = session.exercises.map(ex => {
       if (ex.id === exerciseId) {
         const newLogs = [...ex.logs];
@@ -85,9 +95,22 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
       }
       return ex;
     });
+
+    const updatedExercise = newExercises.find(ex => ex.id === exerciseId);
+    const allSetsCompleted = updatedExercise?.logs.every(log => log.completed) ?? false;
+
     setSession({ ...session, exercises: newExercises });
 
-    if (!exerciseIsCardio) {
+    if (allSetsCompleted) {
+      if (currentExerciseIndex < newExercises.length - 1) {
+        setIsResting(false); // Stop any rest timers
+        setIsTransitioningNext(true);
+        setTimeout(() => {
+          setCurrentExerciseIndex(prev => prev + 1);
+          setIsTransitioningNext(false);
+        }, 2000);
+      }
+    } else {
       setIsResting(true);
     }
   };
@@ -107,6 +130,14 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
       return ex;
     });
     setSession({ ...session, exercises: newExercises });
+
+    if (currentExerciseIndex < newExercises.length - 1) {
+      setIsTransitioningNext(true);
+      setTimeout(() => {
+        setCurrentExerciseIndex(prev => prev + 1);
+        setIsTransitioningNext(false);
+      }, 2000);
+    }
   };
 
   const handleNextExercise = () => {
@@ -190,6 +221,14 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto pb-32">
+      {isTransitioningNext && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center z-[100] animate-fade-in-up">
+          <DumbbellIcon className="h-16 w-16 text-blue-400 animate-bounce" />
+          <p className="text-2xl font-bold mt-4">Bom trabalho!</p>
+          <p className="text-lg text-gray-300">Preparando próximo exercício...</p>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <button onClick={onBack} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
           Salvar e Voltar
