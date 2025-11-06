@@ -26,7 +26,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
       setName(availableWorkoutNames?.[0] || '');
       setExercises([{ id: crypto.randomUUID(), name: '', sets: 3, reps: '10', imageUrl: undefined, isCardio: false }]);
     }
-  }, [workoutToEdit, availableWorkoutNames]);
+  }, [workoutToEdit]);
   
   const handleExerciseChange = (index: number, field: keyof Omit<Exercise, 'id'>, value: string | number) => {
     setExercises(currentExercises =>
