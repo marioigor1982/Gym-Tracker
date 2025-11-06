@@ -89,12 +89,16 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
   const handleCompleteSet = (exerciseId: string, setIndex: number) => {
     const newExercises = session.exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        const newLogs = [...ex.logs];
-        newLogs[setIndex].completed = true;
-        return { ...ex, logs: newLogs };
-      }
-      return ex;
+        if (ex.id === exerciseId) {
+            const newLogs = ex.logs.map((log, i) => {
+                if (i === setIndex) {
+                    return { ...log, completed: true };
+                }
+                return log;
+            });
+            return { ...ex, logs: newLogs };
+        }
+        return ex;
     });
 
     const updatedExercise = newExercises.find(ex => ex.id === exerciseId);
@@ -119,16 +123,20 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
   const handleCompleteCardioSet = (exerciseId: string, setIndex: number) => {
     setIsCardioTimerRunning(false);
     const newExercises = session.exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        const newLogs = [...ex.logs];
-        newLogs[setIndex] = {
-          ...newLogs[setIndex],
-          completed: true,
-          reps: cardioTime, // Store elapsed seconds
-        };
-        return { ...ex, logs: newLogs };
-      }
-      return ex;
+        if (ex.id === exerciseId) {
+            const newLogs = ex.logs.map((log, i) => {
+                if (i === setIndex) {
+                    return {
+                        ...log,
+                        completed: true,
+                        reps: cardioTime, // Store elapsed seconds
+                    };
+                }
+                return log;
+            });
+            return { ...ex, logs: newLogs };
+        }
+        return ex;
     });
     setSession({ ...session, exercises: newExercises });
 
