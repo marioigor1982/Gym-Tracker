@@ -54,7 +54,7 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
 
               const exerciseContent = (
                 <ul className="text-gray-300 space-y-1 mb-6">
-                  {workout.exercises.slice(0, 4).map(ex => {
+                  {workout.exercises.map(ex => {
                     let statusIcon = null;
                     if (isInProgress && activeSession) {
                         const sessionExercise = activeSession.exercises.find(sessionEx => sessionEx.id === ex.id);
@@ -77,7 +77,6 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
                         </li>
                     );
                   })}
-                  {workout.exercises.length > 4 && <li className="text-gray-500">...e mais</li>}
                 </ul>
               );
               
