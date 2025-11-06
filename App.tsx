@@ -19,6 +19,8 @@ const App: React.FC = () => {
   const [activeSession, setActiveSession] = useLocalStorage<WorkoutSession | null>('activeWorkoutSession', null);
   const [showSplash, setShowSplash] = useState(true);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
+  const [isStartNewConfirmOpen, setIsStartNewConfirmOpen] = useState(false);
+  const [workoutToStart, setWorkoutToStart] = useState<Workout | null>(null);
 
   const [currentView, setCurrentView] = useState<View>(() => {
     try {
@@ -38,7 +40,10 @@ const App: React.FC = () => {
     'https://cdn.pixabay.com/photo/2016/03/27/23/00/weight-lifting-1284616_640.jpg',
     'https://media.istockphoto.com/id/2202976374/pt/foto/modern-gym-with-exercise-machines.webp?a=1&b=1&s=612x612&w=0&k=20&c=kxyJqlUN5yDOOGiWUcr491JcTVJEE3mS8y0sf2p3p9E=',
     'https://cdn.gazetasp.com.br/img/pc/825/560/dn_arquivo/2024/08/novo-projeto-3_1.jpg',
-    'https://img.freepik.com/fotos-premium/close-up-dos-equipamentos-na-academia-de-treinamento_180547-3310.jpg?semt=ais_hybrid&w=740'
+    'https://img.freepik.com/fotos-premium/close-up-dos-equipamentos-na-academia-de-treinamento_180547-3310.jpg?semt=ais_hybrid&w=740',
+    'https://img.freepik.com/fotos-premium/uma-fileira-de-kettlebells-em-uma-prateleira-em-uma-decoracao-de-ginasio-moderna_784085-291.jpg?semt=ais_hybrid&w=740',
+    'https://img.freepik.com/fotos-gratis/halteres-pretos-com-pesos-diferentes_7502-8973.jpg?semt=ais_hybrid&w=740',
+    'https://media.istockphoto.com/id/2206518490/pt/foto/dumbbells-arranged-on-rack-in-modern-gym-showing-equipment-for-fitness-training.webp?a=1&b=1&s=612x612&w=0&k=20&c=elG8mxRZ8ulBcNdllFBlQmAklUZRm4Bv0PmNtxPoH_s='
   ];
   const [backgroundIndex, setBackgroundIndex] = useState(0);
 
@@ -99,25 +104,20 @@ const App: React.FC = () => {
     });
     setCurrentView('list');
   };
-
-  const handleStartWorkout = (workout: Workout) => {
-    if (activeSession) {
-      if (!window.confirm('Já existe um treino em andamento. Deseja iniciar um novo e abandonar o atual?')) {
-        return;
-      }
-    }
+  
+  const startWorkout = (workout: Workout) => {
     if (workout.exercises.length === 0) {
       alert("Este treino está vazio. Adicione exercícios para poder iniciá-lo.");
       handleEditWorkout(workout);
       return;
     }
-    const newSession: WorkoutSession = {
+     const newSession: WorkoutSession = {
         workoutId: workout.id,
         name: workout.name,
         startTime: Date.now(),
         exercises: workout.exercises.map((ex: Exercise): ExerciseSession => ({
             ...ex,
-            logs: Array.from({ length: ex.isCardio ? 1 : ex.sets }, (_, i): SetLog => ({
+            logs: Array.from({ length: ex.isCardio ? 1 : (ex.sets || 1) }, (_, i): SetLog => ({
                 id: `set-${ex.id}-${i}`,
                 weight: 0,
                 reps: 0,
@@ -128,6 +128,24 @@ const App: React.FC = () => {
     setActiveSession(newSession);
     setCurrentView('session');
   };
+
+  const handleStartWorkout = (workout: Workout) => {
+    if (activeSession) {
+      setWorkoutToStart(workout);
+      setIsStartNewConfirmOpen(true);
+    } else {
+       startWorkout(workout);
+    }
+  };
+
+  const confirmStartNewWorkout = () => {
+    if (workoutToStart) {
+        startWorkout(workoutToStart);
+    }
+    setIsStartNewConfirmOpen(false);
+    setWorkoutToStart(null);
+  };
+
 
   const handleContinueWorkout = () => {
     setCurrentView('session');
@@ -287,6 +305,15 @@ const App: React.FC = () => {
         title="Abandonar Treino?"
         message="Tem certeza que deseja abandonar o treino? Seu progresso nesta sessão será perdido."
         confirmText="Sim, Abandonar"
+        cancelText="Cancelar"
+      />
+      <ConfirmModal
+        isOpen={isStartNewConfirmOpen}
+        onClose={() => setIsStartNewConfirmOpen(false)}
+        onConfirm={confirmStartNewWorkout}
+        title="Iniciar Novo Treino?"
+        message="Já existe um treino em andamento. Deseja iniciar um novo e abandonar o atual?"
+        confirmText="Sim, Iniciar Novo"
         cancelText="Cancelar"
       />
     </div>

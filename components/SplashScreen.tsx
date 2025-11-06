@@ -11,7 +11,10 @@ const wallpapers = [
   'https://cdn.pixabay.com/photo/2016/03/27/23/00/weight-lifting-1284616_640.jpg',
   'https://media.istockphoto.com/id/2202976374/pt/foto/modern-gym-with-exercise-machines.webp?a=1&b=1&s=612x612&w=0&k=20&c=kxyJqlUN5yDOOGiWUcr491JcTVJEE3mS8y0sf2p3p9E=',
   'https://cdn.gazetasp.com.br/img/pc/825/560/dn_arquivo/2024/08/novo-projeto-3_1.jpg',
-  'https://img.freepik.com/fotos-premium/close-up-dos-equipamentos-na-academia-de-treinamento_180547-3310.jpg?semt=ais_hybrid&w=740'
+  'https://img.freepik.com/fotos-premium/close-up-dos-equipamentos-na-academia-de-treinamento_180547-3310.jpg?semt=ais_hybrid&w=740',
+  'https://img.freepik.com/fotos-premium/uma-fileira-de-kettlebells-em-uma-prateleira-em-uma-decoracao-de-ginasio-moderna_784085-291.jpg?semt=ais_hybrid&w=740',
+  'https://img.freepik.com/fotos-gratis/halteres-pretos-com-pesos-diferentes_7502-8973.jpg?semt=ais_hybrid&w=740',
+  'https://media.istockphoto.com/id/2206518490/pt/foto/dumbbells-arranged-on-rack-in-modern-gym-showing-equipment-for-fitness-training.webp?a=1&b=1&s=612x612&w=0&k=20&c=elG8mxRZ8ulBcNdllFBlQmAklUZRm4Bv0PmNtxPoH_s='
 ];
 
 
