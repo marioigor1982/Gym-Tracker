@@ -11,9 +11,9 @@
   "dependencies": {
     "react-dom": "^19.2.0",
     "react": "^19.2.0",
-    "jspdf": "latest",
+    "jspdf": "2.5.1",
     "html2canvas": "1.4.1",
-    "fflate": "latest",
+    "fflate": "0.8.2",
     "@babel/runtime": "7.24.7"
   },
   "devDependencies": {

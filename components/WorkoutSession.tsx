@@ -148,7 +148,7 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
   const handlePreviousExercise = () => {
       if (currentExerciseIndex > 0) {
-          setCurrentExerciseIndex(prev => prev + 1);
+          setCurrentExerciseIndex(prev => prev - 1);
       }
   };
 
@@ -156,10 +156,31 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
   const handleDeleteExercise = (exerciseId: string) => {
     if (window.confirm('Tem certeza que deseja remover este exercício da sessão? Esta ação não altera o treino salvo.')) {
+        const exerciseIndexToDelete = session.exercises.findIndex(ex => ex.id === exerciseId);
+        if (exerciseIndexToDelete === -1) return;
+
         const updatedExercises = session.exercises.filter(ex => ex.id !== exerciseId);
-        if (session.exercises.findIndex(e => e.id === exerciseId) < currentExerciseIndex) {
-            setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
+
+        if (updatedExercises.length === 0) {
+            alert("Você removeu o último exercício. A sessão será salva e você voltará para a lista de treinos.");
+            onBack();
+            return;
         }
+
+        let newCurrentExerciseIndex = currentExerciseIndex;
+
+        if (exerciseIndexToDelete < currentExerciseIndex) {
+            // If we deleted an exercise before the current one, shift index back.
+            newCurrentExerciseIndex = currentExerciseIndex - 1;
+        } else if (exerciseIndexToDelete === currentExerciseIndex) {
+            // If we deleted the current exercise, the index stays the same,
+            // but we must ensure it's not out of bounds of the new, shorter array.
+            if (newCurrentExerciseIndex >= updatedExercises.length) {
+                newCurrentExerciseIndex = updatedExercises.length - 1;
+            }
+        }
+        
+        setCurrentExerciseIndex(Math.max(0, newCurrentExerciseIndex));
         setSession({ ...session, exercises: updatedExercises });
     }
   };

@@ -5,8 +5,8 @@ import WorkoutList from './components/WorkoutList';
 import WorkoutForm from './components/WorkoutForm';
 import WorkoutSessionComponent from './components/WorkoutSession';
 import Dashboard from './components/Dashboard';
-import { PlusIcon, DumbbellIcon, ChartBarIcon, HomeIcon } from './components/icons';
 import SplashScreen from './components/SplashScreen';
+import { PlusIcon, DumbbellIcon, ChartBarIcon } from './components/icons';
 
 type View = 'list' | 'form' | 'session' | 'dashboard';
 
@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [workouts, setWorkouts] = useLocalStorage<Workout[]>('workouts', []);
   const [workoutHistory, setWorkoutHistory] = useLocalStorage<WorkoutSession[]>('workoutHistory', []);
   const [activeSession, setActiveSession] = useLocalStorage<WorkoutSession | null>('activeWorkoutSession', null);
+  const [showSplash, setShowSplash] = useState(true);
   
   const [currentView, setCurrentView] = useState<View>(() => {
     try {
@@ -27,7 +28,6 @@ const App: React.FC = () => {
   });
 
   const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
-  const [hasEntered, setHasEntered] = useState(!!activeSession); // Enter directly if session active
 
   const existingWorkoutNames = workouts.map(w => w.name);
   const availableWorkoutNames = PREDEFINED_WORKOUT_NAMES.filter(
@@ -183,8 +183,8 @@ const App: React.FC = () => {
     }
   };
 
-  if (!hasEntered) {
-    return <SplashScreen onEnter={() => setHasEntered(true)} />;
+  if (showSplash) {
+    return <SplashScreen onEnter={() => setShowSplash(false)} />;
   }
 
   const isNewWorkoutDisabled = availableWorkoutNames.length === 0;
@@ -200,10 +200,6 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2">
             {currentView === 'list' && (
               <>
-                <button onClick={() => setHasEntered(false)} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition duration-300">
-                  <HomeIcon className="h-5 w-5 text-blue-400" />
-                  <span className="hidden sm:inline">Início</span>
-                </button>
                 <button onClick={() => setCurrentView('dashboard')} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition duration-300">
                   <ChartBarIcon className="h-5 w-5 text-blue-400" />
                   <span className="hidden sm:inline">Progresso</span>
