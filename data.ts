@@ -31,7 +31,7 @@ export const predefinedExercises: PredefinedExercise[] = [
 
   // Treino de Perna (baseado na imagem)
   { name: 'Leg Press 45', category: 'Perna', imageUrl: 'https://media.tenor.com/e0qeS17dv7QAAAAM/legpress45-leg-press.gif' },
-  { name: 'Hack Press', category: 'Perna', imageUrl: 'https://www.snodesport.com/cdn/shop/files/snodesquatmachine.jpg?v=1729490366&width=720' },
+  { name: 'Hack Press', category: 'Perna', imageUrl: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/11/agachamento-no-rack.gif' },
   { name: 'Stiff Pés Separados', category: 'Perna', imageUrl: placeholderUrl('Stiff') },
   { name: 'Extensor', category: 'Perna', imageUrl: 'https://media1.tenor.com/m/fNeMiJuGmEcAAAAd/cadeira-extensora-extensora.gif' },
   { name: 'Flexor', category: 'Perna', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2023/04/lever-lying-leg-curl.gif' },
