@@ -29,13 +29,20 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
   }, [workoutToEdit, availableWorkoutNames]);
   
   const handleExerciseChange = (index: number, field: keyof Omit<Exercise, 'id'>, value: string | number) => {
-    const newExercises = [...exercises];
-    if (field === 'sets' && typeof value === 'string') {
-        newExercises[index][field] = parseInt(value, 10) || 0;
-    } else {
-        (newExercises[index] as any)[field] = value;
-    }
-    setExercises(newExercises);
+    setExercises(currentExercises =>
+      currentExercises.map((exercise, i) => {
+        if (i === index) {
+          const newExercise = { ...exercise };
+          if (field === 'sets' && typeof value === 'string') {
+            (newExercise as any)[field] = parseInt(value, 10) || 0;
+          } else {
+            (newExercise as any)[field] = value;
+          }
+          return newExercise;
+        }
+        return exercise;
+      })
+    );
   };
 
   const handleSuggestionSelect = (index: number, suggestion: PredefinedExercise) => {
@@ -212,7 +219,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
                               />
                           </div>
                           <div className="flex-grow">
-                              <label className="block text-xs font-medium text-gray-400 mb-1">Reps</label>
+                              <label className="block text-xs font--medium text-gray-400 mb-1">Reps</label>
                               <input
                                   type="text"
                                   value={exercise.reps}
