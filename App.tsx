@@ -106,7 +106,7 @@ const App: React.FC = () => {
   };
   
   const startWorkout = (workout: Workout) => {
-    if (workout.exercises.length === 0) {
+    if (!workout.exercises || workout.exercises.length === 0) {
       alert("Este treino está vazio. Adicione exercícios para poder iniciá-lo.");
       handleEditWorkout(workout);
       return;
@@ -115,15 +115,23 @@ const App: React.FC = () => {
         workoutId: workout.id,
         name: workout.name,
         startTime: Date.now(),
-        exercises: workout.exercises.map((ex: Exercise): ExerciseSession => ({
-            ...ex,
-            logs: Array.from({ length: ex.isCardio ? 1 : (ex.sets || 1) }, (_, i): SetLog => ({
-                id: `set-${ex.id}-${i}`,
-                weight: 0,
-                reps: 0,
-                completed: false,
-            })),
-        })),
+        exercises: workout.exercises.map((ex: Exercise): ExerciseSession => {
+            const isCardio = ex.isCardio ?? false;
+            // For cardio, we use 1 set. For strength, default to 1 if not specified.
+            const numSets = isCardio ? 1 : (ex.sets || 1);
+
+            return {
+                ...ex,
+                isCardio,
+                sets: numSets,
+                logs: Array.from({ length: numSets }, (_, i): SetLog => ({
+                    id: `set-${ex.id}-${i}`,
+                    weight: 0,
+                    reps: 0,
+                    completed: false,
+                })),
+            };
+        }),
     };
     setActiveSession(newSession);
     setCurrentView('session');
