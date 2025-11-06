@@ -15,16 +15,21 @@ interface WorkoutFormProps {
 const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClose, onDelete, availableWorkoutNames }) => {
   const [name, setName] = useState('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [schedule, setSchedule] = useState<string[]>([]);
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  
+  const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
   useEffect(() => {
     if (workoutToEdit) {
       setName(workoutToEdit.name);
       setExercises(workoutToEdit.exercises);
+      setSchedule(workoutToEdit.schedule || []);
     } else {
       setName(availableWorkoutNames?.[0] || '');
       setExercises([{ id: crypto.randomUUID(), name: '', sets: 3, reps: '10', imageUrl: undefined, isCardio: false }]);
+      setSchedule([]);
     }
   }, [workoutToEdit]);
   
@@ -42,6 +47,12 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
         }
         return exercise;
       })
+    );
+  };
+  
+  const handleToggleDay = (day: string) => {
+    setSchedule(prev => 
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
     );
   };
 
@@ -92,6 +103,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
         id: workoutToEdit?.id || crypto.randomUUID(),
         name,
         exercises: validExercises,
+        schedule,
     });
 };
 
@@ -139,6 +151,26 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
                   {availableWorkoutNames?.map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
               )}
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Agendar Dias (Opcional)</label>
+              <div className="flex flex-wrap gap-2">
+                {daysOfWeek.map(day => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => handleToggleDay(day)}
+                    className={`px-3 py-2 text-sm font-semibold rounded-full transition-colors duration-200 ${
+                      schedule.includes(day)
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <h3 className="text-lg font-semibold mb-4 text-gray-200">Exercícios</h3>

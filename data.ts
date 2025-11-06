@@ -30,6 +30,7 @@ export const predefinedExercises: PredefinedExercise[] = [
   { name: 'Extensão Lombar', category: 'Costas', imageUrl: placeholderUrl('Extensão Lombar') },
 
   // Treino de Perna (baseado na imagem)
+  { name: 'Leg Press 45', category: 'Perna', imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/06/45-degree-Leg-Press.gif' },
   { name: 'Hack Press', category: 'Perna', imageUrl: 'https://www.snodesport.com/cdn/shop/files/snodesquatmachine.jpg?v=1729490366&width=720' },
   { name: 'Stiff Pés Separados', category: 'Perna', imageUrl: placeholderUrl('Stiff') },
   { name: 'Extensor', category: 'Perna', imageUrl: placeholderUrl('Cadeira Extensora') },

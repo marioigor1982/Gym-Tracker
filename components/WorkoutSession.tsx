@@ -389,7 +389,7 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
       {session.exercises.length > currentExerciseIndex + 1 && (
         <div className="mt-8">
-            <button onClick={() => setIsUpcomingListOpen(!isUpcomingListOpen)} className="w-full bg-gray-700/50 hover:bg-gray-700 p-3 rounded-lg flex justify-between items-center font-semibold transition-colors">
+            <button onClick={() => setIsUpcomingListOpen(!isUpcomingListOpen)} className="w-full bg-gray-800 border border-gray-700 hover:bg-gray-700/50 p-3 rounded-lg flex justify-between items-center font-semibold transition-colors">
                 <span>Próximos Exercícios</span>
                 <ChevronDownIcon className={`transform transition-transform ${isUpcomingListOpen ? 'rotate-180' : ''}`} />
             </button>

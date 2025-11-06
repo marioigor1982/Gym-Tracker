@@ -125,6 +125,15 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
                         <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent ${isCompletedToday ? 'bg-black/30' : ''}`}></div>
                         <div className="absolute bottom-4 left-6 z-10">
                           <h3 className="text-2xl font-bold text-white">{workout.name}</h3>
+                           {workout.schedule && workout.schedule.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {workout.schedule.map(day => (
+                                <span key={day} className="bg-white/20 text-white text-xs font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm">
+                                  {day}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         {isInProgress && (
                           <div className="absolute top-3 right-3 z-10 bg-yellow-400 text-black font-bold text-xs py-1 px-3 rounded-full uppercase">
@@ -140,7 +149,7 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
                   ) : (
                     <div className="p-6 flex-grow flex flex-col justify-between">
                       <div>
-                        <div className="flex justify-between items-start mb-3">
+                        <div className="flex justify-between items-start mb-1">
                           <h3 className="text-xl font-bold text-blue-400">{workout.name}</h3>
                           {isInProgress && (
                               <span className="bg-yellow-400 text-black font-bold text-xs py-1 px-2 rounded-full uppercase">
@@ -148,6 +157,15 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
                               </span>
                           )}
                         </div>
+                        {workout.schedule && workout.schedule.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {workout.schedule.map(day => (
+                              <span key={day} className="bg-gray-700 text-blue-300 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                {day}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         {exerciseContent}
                       </div>
                       {actionButtons}

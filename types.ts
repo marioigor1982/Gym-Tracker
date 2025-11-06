@@ -12,6 +12,7 @@ export interface Workout {
   id: string;
   name: string;
   exercises: Exercise[];
+  schedule?: string[];
 }
 
 export interface SetLog {
