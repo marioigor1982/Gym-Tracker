@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { WorkoutSession } from '../types';
 import { ChartBarIcon, ClockIcon, DumbbellIcon, XIcon, TrashIcon, HeartIcon } from './icons';
 import Calendar from './Calendar';
+import ConfirmModal from './ConfirmModal';
 
 interface DashboardProps {
   history: WorkoutSession[];
@@ -21,6 +22,7 @@ const formatDuration = (ms: number) => {
 
 const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const stats = React.useMemo(() => {
     const totalWorkouts = history.length;
@@ -228,13 +230,26 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
             A ação abaixo é permanente e não pode ser desfeita.
         </p>
         <button
-            onClick={onReset}
+            onClick={() => setIsConfirmModalOpen(true)}
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300 flex items-center gap-2 mx-auto"
         >
             <TrashIcon />
             Zerar Todos os Dados
         </button>
     </div>
+
+    <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={() => {
+          setIsConfirmModalOpen(false);
+          onReset();
+        }}
+        title="Apagar Todos os Dados?"
+        message="Esta ação é permanente e não pode ser desfeita. Todos os seus treinos, histórico e progresso serão apagados para sempre. Tem certeza que deseja continuar?"
+        confirmText="Sim, Apagar Tudo"
+        cancelText="Cancelar"
+      />
     </div>
   );
 };

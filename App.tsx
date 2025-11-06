@@ -141,10 +141,8 @@ const App: React.FC = () => {
   };
 
   const handleResetApp = () => {
-    if (window.confirm('Você tem certeza que deseja apagar TODOS os dados do aplicativo? Seus treinos e histórico de progresso serão perdidos permanentemente.')) {
-      window.localStorage.clear();
-      window.location.reload();
-    }
+    window.localStorage.clear();
+    window.location.reload();
   };
 
   const renderContent = () => {
