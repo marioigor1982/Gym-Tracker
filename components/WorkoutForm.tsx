@@ -219,7 +219,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
                               />
                           </div>
                           <div className="flex-grow">
-                              <label className="block text-xs font--medium text-gray-400 mb-1">Reps</label>
+                              <label className="block text-xs font-medium text-gray-400 mb-1">Reps</label>
                               <input
                                   type="text"
                                   value={exercise.reps}

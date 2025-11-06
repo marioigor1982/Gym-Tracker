@@ -1,6 +1,9 @@
-import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { WorkoutSession } from '../types';
+
+// jspdf é carregado através de uma tag de script em index.html e está disponível no objeto window.
+// Acessamos a classe principal do objeto global 'jspdf'.
+const { jsPDF } = (window as any).jspdf;
 
 const formatDuration = (ms: number) => {
     if (ms < 0) ms = 0;

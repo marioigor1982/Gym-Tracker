@@ -36,7 +36,7 @@ export const predefinedExercises: PredefinedExercise[] = [
   { name: 'Flexor', category: 'Perna', imageUrl: placeholderUrl('Cadeira Flexora') },
   { name: 'Elevação da Pelve', category: 'Perna', imageUrl: placeholderUrl('Elevação Pélvica') },
   { name: 'Abdução', category: 'Perna', imageUrl: placeholderUrl('Cadeira Abdutora') },
-  { name: 'Panturrilha em pé', category: 'Perna', imageUrl: placeholderUrl('Panturrilha em Pé') },
+  { name: 'Panturrilha em pé', category: 'Perna', imageUrl: 'https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-em-pe.gif' },
   { name: 'Panturrilha Sentado', category: 'Perna', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2018/10/lever-seated-calf-raise-.gif' },
 
   // Exercícios de Cardio
