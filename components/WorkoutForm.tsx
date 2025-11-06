@@ -88,11 +88,16 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
       <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl max-h-full flex flex-col">
         <div className="p-6 flex justify-between items-center border-b border-gray-700">
             <h2 className="text-2xl font-bold text-blue-400">{workoutToEdit ? `Editar Treino: ${workoutToEdit.name}` : 'Criar Novo Treino'}</h2>
-            <button type="button" onClick={onClose} className="text-gray-400 hover:text-white">
-            <XIcon />
-            </button>
+            <div className="flex items-center gap-4">
+              <button type="submit" form="workout-form" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                Salvar
+              </button>
+              <button type="button" onClick={onClose} className="text-gray-400 hover:text-white">
+                <XIcon />
+              </button>
+            </div>
         </div>
-        <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto">
+        <form id="workout-form" onSubmit={handleSubmit} className="flex-grow overflow-y-auto">
           <div className="p-6">
             <div className="mb-6">
               <label htmlFor="workout-name" className="block text-sm font-medium text-gray-300 mb-1">Nome do Treino</label>
@@ -221,21 +226,16 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
             </button>
           </div>
           
-          <div className="bg-gray-900 px-6 py-4 flex justify-between items-center mt-auto border-t border-gray-700">
-            <div>
-              {workoutToEdit && onDelete && (
-                <button
-                  type="button"
-                  onClick={() => onDelete(workoutToEdit.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center gap-2"
-                >
-                  <TrashIcon /> Excluir
-                </button>
-              )}
-            </div>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
-              Salvar Treino
-            </button>
+          <div className="bg-gray-900 px-6 py-4 flex justify-start items-center mt-auto border-t border-gray-700">
+            {workoutToEdit && onDelete && (
+              <button
+                type="button"
+                onClick={() => onDelete(workoutToEdit.id)}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center gap-2"
+              >
+                <TrashIcon /> Excluir
+              </button>
+            )}
           </div>
         </form>
       </div>
