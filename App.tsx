@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Workout, WorkoutSession, Exercise, ExerciseSession, SetLog } from './types';
 import WorkoutList from './components/WorkoutList';
@@ -30,6 +30,25 @@ const App: React.FC = () => {
   });
 
   const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
+
+  // Wallpaper slideshow for the list view
+  const wallpapers = [
+    'https://images.unsplash.com/photo-1623874514711-0f321325f318?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8YWNhZGVtaWF8ZW58MHx8MHx8fDA=&fm=jpg&q=60&w=3000',
+    'https://assets-cdn.wellhub.com/images/?su=https://images.partners.gympass.com/image/partners/0f3087f7-e147-40ec-af23-8a605ec1b263/lg_f795cf52-e518-4555-99f5-0cf83f9129d1_WhatsAppImage20230822at10.39.28.jpeg&h=280',
+    'https://cdn.pixabay.com/photo/2016/03/27/23/00/weight-lifting-1284616_640.jpg',
+    'https://media.istockphoto.com/id/2202976374/pt/foto/modern-gym-with-exercise-machines.webp?a=1&b=1&s=612x612&w=0&k=20&c=kxyJqlUN5yDOOGiWUcr491JcTVJEE3mS8y0sf2p3p9E=',
+    'https://cdn.gazetasp.com.br/img/pc/825/560/dn_arquivo/2024/08/novo-projeto-3_1.jpg',
+    'https://img.freepik.com/fotos-premium/close-up-dos-equipamentos-na-academia-de-treinamento_180547-3310.jpg?semt=ais_hybrid&w=740'
+  ];
+  const [backgroundIndex, setBackgroundIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBackgroundIndex((prevIndex) => (prevIndex + 1) % wallpapers.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const existingWorkoutNames = workouts.map(w => w.name);
   const availableWorkoutNames = PREDEFINED_WORKOUT_NAMES.filter(
@@ -197,7 +216,22 @@ const App: React.FC = () => {
   const isNewWorkoutDisabled = availableWorkoutNames.length === 0;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
+    <div className="min-h-screen bg-gray-900 text-white font-sans relative">
+       {currentView === 'list' && (
+        <>
+          {wallpapers.map((url, index) => (
+            <div
+              key={url}
+              className={`fixed inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out z-0 ${
+                index === backgroundIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{ backgroundImage: `url('${url}')` }}
+            />
+          ))}
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-80 z-0" />
+        </>
+      )}
+
       <header className="bg-gray-800/80 backdrop-blur-sm shadow-lg sticky top-0 z-40">
         <nav className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
           <button onClick={() => setCurrentView('list')} className="flex items-center gap-3 cursor-pointer">
@@ -243,7 +277,7 @@ const App: React.FC = () => {
           </div>
         </nav>
       </header>
-      <main className="container mx-auto">
+      <main className="container mx-auto relative z-10">
         {renderContent()}
       </main>
       <ConfirmModal

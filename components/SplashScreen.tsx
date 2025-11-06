@@ -10,7 +10,8 @@ const wallpapers = [
   'https://assets-cdn.wellhub.com/images/?su=https://images.partners.gympass.com/image/partners/0f3087f7-e147-40ec-af23-8a605ec1b263/lg_f795cf52-e518-4555-99f5-0cf83f9129d1_WhatsAppImage20230822at10.39.28.jpeg&h=280',
   'https://cdn.pixabay.com/photo/2016/03/27/23/00/weight-lifting-1284616_640.jpg',
   'https://media.istockphoto.com/id/2202976374/pt/foto/modern-gym-with-exercise-machines.webp?a=1&b=1&s=612x612&w=0&k=20&c=kxyJqlUN5yDOOGiWUcr491JcTVJEE3mS8y0sf2p3p9E=',
-  'https://cdn.gazetasp.com.br/img/pc/825/560/dn_arquivo/2024/08/novo-projeto-3_1.jpg'
+  'https://cdn.gazetasp.com.br/img/pc/825/560/dn_arquivo/2024/08/novo-projeto-3_1.jpg',
+  'https://img.freepik.com/fotos-premium/close-up-dos-equipamentos-na-academia-de-treinamento_180547-3310.jpg?semt=ais_hybrid&w=740'
 ];
 
 
@@ -20,7 +21,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentWallpaperIndex((prevIndex) => (prevIndex + 1) % wallpapers.length);
-    }, 7000); // 7 seconds
+    }, 5000); // 5 seconds
 
     return () => clearInterval(timer);
   }, []);
