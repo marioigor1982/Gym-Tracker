@@ -94,48 +94,52 @@ const createPdfHtml = (session: WorkoutSession): string => {
     `;
 };
 
-export const generateWorkoutPdf = async (session: WorkoutSession): Promise<void> => {
-    const reportHtml = createPdfHtml(session);
+export const generateWorkoutPdf = (session: WorkoutSession): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        const reportHtml = createPdfHtml(session);
 
-    // Create a temporary element to render the HTML for capturing
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-9999px'; // Position off-screen
-    tempContainer.innerHTML = reportHtml;
-    document.body.appendChild(tempContainer);
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.innerHTML = reportHtml;
+        document.body.appendChild(tempContainer);
 
-    const contentElement = tempContainer.querySelector('#pdf-content') as HTMLElement;
-    if (!contentElement) {
-        console.error('Could not find element to generate PDF from.');
-        document.body.removeChild(tempContainer);
-        return;
-    }
+        const contentElement = tempContainer.querySelector('#pdf-content') as HTMLElement;
+        if (!contentElement) {
+            console.error('Could not find element to generate PDF from.');
+            document.body.removeChild(tempContainer);
+            return reject(new Error('PDF content element not found.'));
+        }
 
-    try {
-        const canvas = await html2canvas(contentElement, {
-            scale: 2, // Higher scale for better quality
-            useCORS: true,
-            logging: false,
-        });
+        setTimeout(async () => {
+            try {
+                const canvas = await html2canvas(contentElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                });
 
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
-        });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
 
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        
-        const dateStr = new Date(session.startTime).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
-        const fileName = `Relatorio-Treino-${session.name.replace(/\s/g, '_')}-${dateStr}.pdf`;
-        
-        pdf.save(fileName);
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                
+                const dateStr = new Date(session.startTime).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+                const fileName = `Relatorio-Treino-${session.name.replace(/\s/g, '_')}-${dateStr}.pdf`;
+                
+                pdf.save(fileName);
+                resolve();
 
-    } catch (error) {
-        console.error("Error generating PDF: ", error);
-    } finally {
-        // Clean up the temporary element
-        document.body.removeChild(tempContainer);
-    }
+            } catch (error) {
+                console.error("Error generating PDF: ", error);
+                reject(error);
+            } finally {
+                document.body.removeChild(tempContainer);
+            }
+        }, 100); // Small delay to ensure the element is rendered
+    });
 };

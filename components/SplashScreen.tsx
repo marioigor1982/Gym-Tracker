@@ -25,6 +25,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
     return () => clearInterval(timer);
   }, []);
 
+  const textShadowStyle = { textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' };
+
   return (
     <div className="h-screen w-screen relative flex flex-col items-center justify-center text-white overflow-hidden">
       {/* Background Images Container */}
@@ -39,15 +41,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
       ))}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
       {/* Content */}
       <div className="relative z-10 text-center animate-fade-in-up p-4">
         <div className="flex justify-center items-center gap-4 mb-4">
           <DumbbellIcon className="h-12 w-12 md:h-16 md:w-16 text-blue-400" />
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Gym Tracker</h1>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight" style={textShadowStyle}>Gym Tracker</h1>
         </div>
-        <p className="text-lg md:text-xl text-gray-300 mb-8">Sua jornada para a força começa aqui.</p>
+        <p className="text-lg md:text-xl text-gray-300 mb-8" style={textShadowStyle}>Sua jornada para a força começa aqui.</p>
         <button
           onClick={onEnter}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105"

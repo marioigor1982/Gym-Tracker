@@ -105,28 +105,28 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
       
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex items-center gap-4">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg shadow-lg flex items-center gap-4 border border-gray-700">
           <ChartBarIcon className="h-10 w-10 text-green-400" />
           <div>
             <p className="text-gray-400 text-sm">Total de Treinos</p>
             <p className="text-3xl font-bold">{stats.totalWorkouts}</p>
           </div>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex items-center gap-4">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg shadow-lg flex items-center gap-4 border border-gray-700">
           <ClockIcon className="h-10 w-10 text-yellow-400" />
           <div>
             <p className="text-gray-400 text-sm">Duração Total</p>
             <p className="text-3xl font-bold">{formatDuration(stats.totalDuration)}</p>
           </div>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex items-center gap-4">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg shadow-lg flex items-center gap-4 border border-gray-700">
           <HeartIcon className="h-10 w-10 text-pink-400" />
           <div>
             <p className="text-gray-400 text-sm">Tempo de Cardio</p>
             <p className="text-3xl font-bold">{formatDuration(stats.totalCardioTime)}</p>
           </div>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex items-center gap-4">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg shadow-lg flex items-center gap-4 border border-gray-700">
           <DumbbellIcon className="h-10 w-10 text-red-400" />
           <div>
             <p className="text-gray-400 text-sm">Peso Total Levantado</p>

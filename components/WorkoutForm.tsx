@@ -137,7 +137,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
               {exercises.map((exercise, index) => {
                 const suggestions = focusedInputIndex === index ? getSuggestions(exercise.name) : [];
                 return (
-                  <div key={exercise.id} className="bg-gray-700 p-4 rounded-md flex flex-col sm:flex-row gap-4 items-center">
+                  <div key={exercise.id} className="bg-gray-700/50 p-4 rounded-lg flex flex-col sm:flex-row gap-4 items-center border border-gray-700">
                     <div className="flex-shrink-0 w-24 h-24 bg-gray-800 rounded-md flex items-center justify-center">
                       {exercise.imageUrl ? (
                         <img src={exercise.imageUrl} alt={exercise.name} className="w-full h-full object-cover rounded-md" />

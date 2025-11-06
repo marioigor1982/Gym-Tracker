@@ -148,7 +148,7 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
 
   const handlePreviousExercise = () => {
       if (currentExerciseIndex > 0) {
-          setCurrentExerciseIndex(prev => prev - 1);
+          setCurrentExerciseIndex(prev => prev + 1);
       }
   };
 
@@ -230,7 +230,7 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
       )}
 
       <div className="flex justify-between items-center mb-6">
-        <button onClick={onBack} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+        <button onClick={onBack} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
           Salvar e Voltar
         </button>
         <h1 className="text-2xl md:text-3xl font-bold text-blue-400 text-center flex-grow px-4 truncate">{session.name}</h1>
@@ -239,15 +239,14 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
         </button>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6 shadow-xl mb-6">
+      <div className="bg-gray-800 rounded-lg p-6 shadow-xl mb-6 border border-gray-700">
         {currentExercise.imageUrl && (
-            <div className="mb-6 rounded-lg overflow-hidden h-48 md:h-64 bg-gray-700 flex items-center justify-center">
+            <div className="mb-6 rounded-lg overflow-hidden h-48 md:h-64 bg-gray-900/50 flex items-center justify-center">
                 <img src={currentExercise.imageUrl} alt={currentExercise.name} className="w-full h-full object-contain" />
             </div>
         )}
         <div className="flex items-center mb-4">
-            <DumbbellIcon className="h-6 w-6 text-blue-400" />
-            <h2 className="text-2xl font-semibold ml-3">{currentExercise.name}</h2>
+            <h2 className="text-3xl font-bold">{currentExercise.name}</h2>
         </div>
 
         {currentExercise.isCardio ? (
@@ -332,8 +331,9 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
             </div>
           </>
         )}
-        
-        <div className="mt-8 pt-4 border-t border-gray-700 flex justify-between items-center">
+      </div>
+
+      <div className="mt-8 pt-4 flex justify-between items-center">
             <button
                 onClick={handlePreviousExercise}
                 disabled={currentExerciseIndex === 0}
@@ -354,7 +354,6 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
                 <ArrowRightIcon />
             </button>
         </div>
-      </div>
 
       {session.exercises.length > currentExerciseIndex + 1 && (
         <div className="mt-8">

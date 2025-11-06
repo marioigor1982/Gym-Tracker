@@ -130,12 +130,12 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
               return (
                 <div 
                   key={workout.id} 
-                  className={`bg-gray-800 rounded-lg shadow-lg flex flex-col border-2 transition-all duration-300 overflow-hidden ${
+                  className={`bg-gray-800 rounded-lg shadow-lg flex flex-col border-2 transition-all duration-300 overflow-hidden transform hover:scale-105 ${
                     isCompletedToday 
-                      ? 'border-transparent opacity-60' 
+                      ? 'border-green-800/50 opacity-60' 
                       : isInProgress
-                      ? 'border-yellow-500 hover:shadow-yellow-500/20'
-                      : 'hover:shadow-blue-500/20 hover:border-blue-500 border-transparent'
+                      ? 'border-yellow-500 shadow-yellow-500/20'
+                      : 'border-gray-700 hover:shadow-blue-500/20 hover:border-blue-500'
                   }`}
                 >
                   {imageUrl ? (

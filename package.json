@@ -13,6 +13,7 @@
     "react": "^19.2.0",
     "jspdf": "latest",
     "html2canvas": "1.4.1",
+    "fflate": "latest",
     "@babel/runtime": "7.24.7"
   },
   "devDependencies": {
