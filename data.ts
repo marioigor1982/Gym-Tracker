@@ -9,15 +9,15 @@ const placeholderUrl = (name: string) => `https://placehold.co/150x150/374151/9c
 export const predefinedExercises: PredefinedExercise[] = [
   // Treino de Peito (baseado na imagem)
   { name: 'Supino Reto', category: 'Peito', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2024/04/barbell-bench-press.gif' },
-  { name: 'Supino Inclinado', category: 'Peito', imageUrl: placeholderUrl('Supino Inclinado') },
-  { name: 'Supino Sentado', category: 'Peito', imageUrl: placeholderUrl('Supino Sentado') },
-  { name: 'Crucifixo Inclinado', category: 'Peito', imageUrl: placeholderUrl('Crucifixo Inclinado') },
-  { name: 'Tríceps Corda', category: 'Peito', imageUrl: placeholderUrl('Tríceps Corda') },
-  { name: 'Tríceps Testa Pulley', category: 'Peito', imageUrl: placeholderUrl('Tríceps Testa') },
-  { name: 'Elevação Lateral', category: 'Peito', imageUrl: placeholderUrl('Elevação Lateral') },
-  { name: 'Elevação Frontal', category: 'Peito', imageUrl: placeholderUrl('Elevação Frontal') },
+  { name: 'Supino Inclinado', category: 'Peito', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2023/09/barbell-incline-bench-press.gif' },
+  { name: 'Supino Sentado', category: 'Peito', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2018/09/lever-decline-chest-press.gif' },
+  { name: 'Crucifixo Inclinado', category: 'Peito', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2023/09/dumbbell-fly.gif' },
+  { name: 'Tríceps Corda', category: 'Peito', imageUrl: 'https://media.tenor.com/GpvUxIvyOZ0AAAAM/tr%C3%ADceps-pulley-corda.gif' },
+  { name: 'Tríceps Testa Pulley', category: 'Peito', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2025/01/triceps-frances-na-polia-alta-com-corda.gif' },
+  { name: 'Elevação Lateral', category: 'Peito', imageUrl: 'https://media.tenor.com/cy46UbnfUrkAAAAM/eleva%C3%A7%C3%A3o-lateral-hateres.gif' },
+  { name: 'Elevação Frontal', category: 'Peito', imageUrl: 'https://www.hipertrofia.org/blog/wp-content/uploads/2023/11/dumbbell-front-raise.gif' },
   { name: 'Abdominal Superior', category: 'Peito', imageUrl: placeholderUrl('Abdominal') },
-  { name: 'Abdominal Prancha', category: 'Peito', imageUrl: placeholderUrl('Prancha') },
+  { name: 'Abdominal Prancha', category: 'Peito', imageUrl: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/11/Prancha-abdominal-lateral-com-torcao.gif' },
 
   // Treino de Costas (baseado na imagem)
   { name: 'Puxada Alta', category: 'Costas', imageUrl: 'https://treinototal.com.br/wp-content/uploads/2025/06/puxada-alta-na-polia-pegada-pronada.gif' },
