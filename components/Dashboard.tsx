@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import type { WorkoutSession } from '../types';
-import { ChartBarIcon, ClockIcon, DumbbellIcon, XIcon, TrashIcon, HeartIcon } from './icons';
+import { ChartBarIcon, ClockIcon, DumbbellIcon, XIcon, TrashIcon, HeartIcon, QRIcon } from './icons';
 import Calendar from './Calendar';
 import ConfirmModal from './ConfirmModal';
+import QrCodeModal from './QrCodeModal';
 
 interface DashboardProps {
   history: WorkoutSession[];
@@ -23,6 +24,7 @@ const formatDuration = (ms: number) => {
 const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [qrCodeSession, setQrCodeSession] = useState<WorkoutSession | null>(null);
 
   const stats = React.useMemo(() => {
     const totalWorkouts = history.length;
@@ -153,10 +155,21 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
             <div className="space-y-6">
                 {selectedDateSessions.map(session => (
                     <div key={session.startTime} className="bg-gray-900/50 rounded-lg p-4">
-                        <h3 className="text-xl font-bold text-white mb-4">{session.name}</h3>
-                        <p className="text-sm text-gray-400 mb-4">
-                            Duração: {formatDuration((session.endTime || session.startTime) - session.startTime)}
-                        </p>
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">{session.name}</h3>
+                                <p className="text-sm text-gray-400">
+                                    Duração: {formatDuration((session.endTime || session.startTime) - session.startTime)}
+                                </p>
+                            </div>
+                            <button 
+                                onClick={() => setQrCodeSession(session)} 
+                                className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300" 
+                                title="Gerar QR Code do Resumo"
+                            >
+                                <QRIcon />
+                            </button>
+                        </div>
                         <ul className="space-y-4">
                             {session.exercises.map(exercise => (
                                 <li key={exercise.id}>
@@ -250,6 +263,8 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onReset }) => {
         confirmText="Sim, Apagar Tudo"
         cancelText="Cancelar"
       />
+
+      {qrCodeSession && <QrCodeModal session={qrCodeSession} onClose={() => setQrCodeSession(null)} />}
     </div>
   );
 };

@@ -31,6 +31,12 @@ export const XIcon = () => (
     </svg>
 );
 
+export const QRIcon = ({ className = "h-5 w-5" }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h-1m-5-11v1m0 11h.01M5 12H4m17 0h-1m-1-6l-.707.707M6.707 6.707L6 6m12.728 12.728l-.707.707M6 18l.707-.707M4 4h2v2H4V4zm4 0h2v2H8V4zm4 0h2v2h-2V4zm4 0h2v2h-2V4zM4 8h2v2H4V8zm4 0h2v2H8V8zm4 0h2v2h-2V8zm4 4h2v2h-2v-2zM4 12h2v2H4v-2zm8 4h2v2h-2v-2zm-4 0h2v2H8v-2zm-4 0h2v2H4v-2z" />
+    </svg>
+);
+
 export const DumbbellIcon = ({ className = "h-8 w-8 text-blue-400" }: { className?: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 6a3 3 0 00-3-3h-2a3 3 0 00-3 3v12a3 3 0 003 3h2a3 3 0 003-3V6zM3 6a3 3 0 013-3h2a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zM9 12h6" />
