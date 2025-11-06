@@ -7,6 +7,7 @@ import WorkoutSessionComponent from './components/WorkoutSession';
 import Dashboard from './components/Dashboard';
 import SplashScreen from './components/SplashScreen';
 import { PlusIcon, DumbbellIcon, ChartBarIcon, HomeIcon } from './components/icons';
+import ConfirmModal from './components/ConfirmModal';
 
 type View = 'list' | 'form' | 'session' | 'dashboard';
 
@@ -17,7 +18,8 @@ const App: React.FC = () => {
   const [workoutHistory, setWorkoutHistory] = useLocalStorage<WorkoutSession[]>('workoutHistory', []);
   const [activeSession, setActiveSession] = useLocalStorage<WorkoutSession | null>('activeWorkoutSession', null);
   const [showSplash, setShowSplash] = useState(true);
-  
+  const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
+
   const [currentView, setCurrentView] = useState<View>(() => {
     try {
       const storedSession = window.localStorage.getItem('activeWorkoutSession');
@@ -62,10 +64,8 @@ const App: React.FC = () => {
   };
 
   const handleDeleteWorkoutFromForm = (id: string) => {
-    if (window.confirm('Tem certeza que deseja apagar este treino? Esta ação não pode ser desfeita.')) {
-      setWorkouts(prevWorkouts => prevWorkouts.filter(w => w.id !== id));
-      setCurrentView('list');
-    }
+    setWorkouts(prevWorkouts => prevWorkouts.filter(w => w.id !== id));
+    setCurrentView('list');
   };
 
   const handleSaveWorkout = (workout: Workout) => {
@@ -125,12 +125,15 @@ const App: React.FC = () => {
   };
 
   const handleAbandonWorkout = () => {
-    if (window.confirm('Tem certeza que deseja abandonar o treino? Seu progresso nesta sessão será perdido.')) {
-        setActiveSession(null);
-        setCurrentView('list');
-    }
-  }
+    setIsAbandonConfirmOpen(true);
+  };
   
+  const confirmAbandonWorkout = () => {
+    setActiveSession(null);
+    setCurrentView('list');
+    setIsAbandonConfirmOpen(false);
+  }
+
   const handleCloseForm = () => {
     setCurrentView('list');
   }
@@ -243,6 +246,15 @@ const App: React.FC = () => {
       <main className="container mx-auto">
         {renderContent()}
       </main>
+      <ConfirmModal
+        isOpen={isAbandonConfirmOpen}
+        onClose={() => setIsAbandonConfirmOpen(false)}
+        onConfirm={confirmAbandonWorkout}
+        title="Abandonar Treino?"
+        message="Tem certeza que deseja abandonar o treino? Seu progresso nesta sessão será perdido."
+        confirmText="Sim, Abandonar"
+        cancelText="Cancelar"
+      />
     </div>
   );
 };

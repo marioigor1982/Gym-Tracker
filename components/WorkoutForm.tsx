@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Workout, Exercise } from '../types';
 import { PlusIcon, TrashIcon, XIcon, DumbbellIcon } from './icons';
 import { predefinedExercises, PredefinedExercise } from '../data';
+import ConfirmModal from './ConfirmModal';
 
 interface WorkoutFormProps {
   workoutToEdit?: Workout | null;
@@ -15,6 +16,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
   const [name, setName] = useState('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(null);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (workoutToEdit) {
@@ -240,7 +242,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
             {workoutToEdit && onDelete && (
               <button
                 type="button"
-                onClick={() => onDelete(workoutToEdit.id)}
+                onClick={() => setIsDeleteConfirmOpen(true)}
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center gap-2"
               >
                 <TrashIcon /> Excluir
@@ -249,6 +251,20 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ workoutToEdit, onSave, onClos
           </div>
         </form>
       </div>
+      {workoutToEdit && onDelete && (
+        <ConfirmModal
+            isOpen={isDeleteConfirmOpen}
+            onClose={() => setIsDeleteConfirmOpen(false)}
+            onConfirm={() => {
+                onDelete(workoutToEdit.id);
+                setIsDeleteConfirmOpen(false);
+            }}
+            title="Apagar Treino?"
+            message={`Tem certeza que deseja apagar o treino "${workoutToEdit.name}"? Esta ação não pode ser desfeita.`}
+            confirmText="Sim, Apagar"
+            cancelText="Cancelar"
+        />
+      )}
     </div>
   );
 };

@@ -3,6 +3,7 @@ import type { WorkoutSession, ExerciseSession } from '../types';
 import Timer from './Timer';
 import { DumbbellIcon, PencilIcon, TrashIcon, ChevronDownIcon, MenuIcon, ArrowLeftIcon, ArrowRightIcon } from './icons';
 import InteractiveNumberInput from './InteractiveNumberInput';
+import ConfirmModal from './ConfirmModal';
 
 interface WorkoutSessionProps {
   session: WorkoutSession;
@@ -25,7 +26,8 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
   const [cardioTime, setCardioTime] = useState(0);
   const [isCardioTimerRunning, setIsCardioTimerRunning] = useState(false);
   const [isTransitioningNext, setIsTransitioningNext] = useState(false);
-  
+  const [exerciseToDeleteId, setExerciseToDeleteId] = useState<string | null>(null);
+
   useEffect(() => {
     let interval: number | undefined;
     if (isCardioTimerRunning) {
@@ -57,6 +59,8 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
       </div>
     );
   }
+  
+  const exerciseToDelete = session.exercises.find(e => e.id === exerciseToDeleteId);
 
   const formatStopwatchTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -164,34 +168,32 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
   // --- Funções de gerenciamento de sessão ---
 
   const handleDeleteExercise = (exerciseId: string) => {
-    if (window.confirm('Tem certeza que deseja remover este exercício da sessão? Esta ação não altera o treino salvo.')) {
-        const exerciseIndexToDelete = session.exercises.findIndex(ex => ex.id === exerciseId);
-        if (exerciseIndexToDelete === -1) return;
+    const exerciseIndexToDelete = session.exercises.findIndex(ex => ex.id === exerciseId);
+    if (exerciseIndexToDelete === -1) return;
 
-        const updatedExercises = session.exercises.filter(ex => ex.id !== exerciseId);
+    const updatedExercises = session.exercises.filter(ex => ex.id !== exerciseId);
 
-        if (updatedExercises.length === 0) {
-            alert("Você removeu o último exercício. A sessão será salva e você voltará para a lista de treinos.");
-            onBack();
-            return;
-        }
-
-        let newCurrentExerciseIndex = currentExerciseIndex;
-
-        if (exerciseIndexToDelete < currentExerciseIndex) {
-            // If we deleted an exercise before the current one, shift index back.
-            newCurrentExerciseIndex = currentExerciseIndex - 1;
-        } else if (exerciseIndexToDelete === currentExerciseIndex) {
-            // If we deleted the current exercise, the index stays the same,
-            // but we must ensure it's not out of bounds of the new, shorter array.
-            if (newCurrentExerciseIndex >= updatedExercises.length) {
-                newCurrentExerciseIndex = updatedExercises.length - 1;
-            }
-        }
-        
-        setCurrentExerciseIndex(Math.max(0, newCurrentExerciseIndex));
-        setSession({ ...session, exercises: updatedExercises });
+    if (updatedExercises.length === 0) {
+        alert("Você removeu o último exercício. A sessão será salva e você voltará para a lista de treinos.");
+        onBack();
+        return;
     }
+
+    let newCurrentExerciseIndex = currentExerciseIndex;
+
+    if (exerciseIndexToDelete < currentExerciseIndex) {
+        // If we deleted an exercise before the current one, shift index back.
+        newCurrentExerciseIndex = currentExerciseIndex - 1;
+    } else if (exerciseIndexToDelete === currentExerciseIndex) {
+        // If we deleted the current exercise, the index stays the same,
+        // but we must ensure it's not out of bounds of the new, shorter array.
+        if (newCurrentExerciseIndex >= updatedExercises.length) {
+            newCurrentExerciseIndex = updatedExercises.length - 1;
+        }
+    }
+    
+    setCurrentExerciseIndex(Math.max(0, newCurrentExerciseIndex));
+    setSession({ ...session, exercises: updatedExercises });
   };
 
   const handleEditClick = (exercise: ExerciseSession) => {
@@ -429,7 +431,7 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
                                             <PencilIcon />
                                         </button>
                                       )}
-                                      <button onClick={() => handleDeleteExercise(ex.id)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-600/50 hover:bg-gray-600 transition duration-300">
+                                      <button onClick={() => setExerciseToDeleteId(ex.id)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-600/50 hover:bg-gray-600 transition duration-300">
                                         <TrashIcon />
                                       </button>
                                   </div>
@@ -448,6 +450,20 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
         isRunning={isResting}
         onComplete={() => setIsResting(false)}
       />
+      {exerciseToDelete && (
+        <ConfirmModal
+          isOpen={!!exerciseToDelete}
+          onClose={() => setExerciseToDeleteId(null)}
+          onConfirm={() => {
+            handleDeleteExercise(exerciseToDelete.id);
+            setExerciseToDeleteId(null);
+          }}
+          title="Remover Exercício?"
+          message={`Tem certeza que deseja remover "${exerciseToDelete.name}" da sua sessão atual? Esta ação não altera o treino salvo.`}
+          confirmText="Sim, Remover"
+          cancelText="Cancelar"
+        />
+      )}
     </div>
   );
 };

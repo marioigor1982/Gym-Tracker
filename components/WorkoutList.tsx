@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Workout } from '../types';
 import { PencilIcon, PlayIcon, TrashIcon, DumbbellIcon } from './icons';
+import ConfirmModal from './ConfirmModal';
 
 interface WorkoutListProps {
   workouts: Workout[];
@@ -13,17 +14,9 @@ interface WorkoutListProps {
 }
 
 const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onContinueWorkout, onEditWorkout, onDeleteWorkout, completedTodayIds, inProgressWorkoutId }) => {
-  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
+  const [workoutToDeleteId, setWorkoutToDeleteId] = useState<string | null>(null);
 
-  const handleDeleteClick = (id: string) => {
-    onDeleteWorkout(id);
-    setConfirmingDeleteId(null);
-  };
-
-  const handleCancelDelete = () => {
-    setConfirmingDeleteId(null);
-  };
-
+  const workoutToDelete = workouts.find(w => w.id === workoutToDeleteId);
 
   return (
     <>
@@ -104,25 +97,12 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
                 <div className="flex justify-between items-center mt-4">
                   {actionButton}
                   <div className="flex gap-2 items-center">
-                    {confirmingDeleteId === workout.id ? (
-                      <>
-                        <button onClick={() => handleDeleteClick(workout.id)} className="text-white bg-red-600 hover:bg-red-700 font-bold py-2 px-3 rounded-lg text-sm transition duration-300 animate-fade-in-up">
-                          Apagar
-                        </button>
-                        <button onClick={handleCancelDelete} className="text-gray-300 bg-gray-600 hover:bg-gray-500 font-bold py-2 px-3 rounded-lg text-sm transition duration-300">
-                          Cancelar
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => onEditWorkout(workout)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300">
-                          <PencilIcon />
-                        </button>
-                        <button onClick={() => setConfirmingDeleteId(workout.id)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300">
-                          <TrashIcon />
-                        </button>
-                      </>
-                    )}
+                    <button onClick={() => onEditWorkout(workout)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300">
+                      <PencilIcon />
+                    </button>
+                    <button onClick={() => setWorkoutToDeleteId(workout.id)} className="text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition duration-300">
+                      <TrashIcon />
+                    </button>
                   </div>
                 </div>
               );
@@ -179,6 +159,20 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
           </div>
         )}
       </div>
+      {workoutToDelete && (
+        <ConfirmModal
+          isOpen={!!workoutToDelete}
+          onClose={() => setWorkoutToDeleteId(null)}
+          onConfirm={() => {
+            onDeleteWorkout(workoutToDelete.id);
+            setWorkoutToDeleteId(null);
+          }}
+          title="Apagar Treino?"
+          message={`Tem certeza que deseja apagar o treino "${workoutToDelete.name}"? Esta ação não pode ser desfeita.`}
+          confirmText="Sim, Apagar"
+          cancelText="Cancelar"
+        />
+      )}
     </>
   );
 };
