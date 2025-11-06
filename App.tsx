@@ -6,7 +6,7 @@ import WorkoutForm from './components/WorkoutForm';
 import WorkoutSessionComponent from './components/WorkoutSession';
 import Dashboard from './components/Dashboard';
 import SplashScreen from './components/SplashScreen';
-import { PlusIcon, DumbbellIcon, ChartBarIcon } from './components/icons';
+import { PlusIcon, DumbbellIcon, ChartBarIcon, HomeIcon } from './components/icons';
 
 type View = 'list' | 'form' | 'session' | 'dashboard';
 
@@ -139,6 +139,10 @@ const App: React.FC = () => {
     setCurrentView('list');
   };
 
+  const handleGoHome = () => {
+    setShowSplash(true);
+  };
+
   const handleResetApp = () => {
     window.localStorage.clear();
     window.location.reload();
@@ -198,6 +202,13 @@ const App: React.FC = () => {
             <span className="text-2xl font-bold tracking-tight">Gym Tracker</span>
           </button>
           <div className="flex items-center gap-2">
+            {['list', 'dashboard'].includes(currentView) && (
+              <button onClick={handleGoHome} title="Tela Inicial" className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition duration-300">
+                  <HomeIcon className="h-5 w-5" />
+                  <span className="hidden sm:inline">Início</span>
+              </button>
+            )}
+
             {currentView === 'list' && (
               <>
                 <button onClick={() => setCurrentView('dashboard')} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition duration-300">
