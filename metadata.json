@@ -1,0 +1,5 @@
+{
+  "name": "Gym Tracker",
+  "description": "A web application to create, manage, and execute your gym workout routines. Log your sets, reps, and weight, and use the built-in rest timer to stay on track.",
+  "requestFramePermissions": []
+}
