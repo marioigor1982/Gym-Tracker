@@ -230,6 +230,7 @@ const App: React.FC = () => {
             onDeleteWorkout={handleDeleteWorkout}
             completedTodayIds={completedTodayIds}
             inProgressWorkoutId={activeSession?.workoutId || null}
+            activeSession={activeSession}
           />
         );
     }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Workout } from '../types';
+import type { Workout, WorkoutSession } from '../types';
 import { PencilIcon, PlayIcon, TrashIcon, DumbbellIcon } from './icons';
 import ConfirmModal from './ConfirmModal';
 
@@ -11,9 +11,10 @@ interface WorkoutListProps {
   onDeleteWorkout: (id: string) => void;
   completedTodayIds: Set<string>;
   inProgressWorkoutId: string | null;
+  activeSession: WorkoutSession | null;
 }
 
-const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onContinueWorkout, onEditWorkout, onDeleteWorkout, completedTodayIds, inProgressWorkoutId }) => {
+const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onContinueWorkout, onEditWorkout, onDeleteWorkout, completedTodayIds, inProgressWorkoutId, activeSession }) => {
   const [workoutToDeleteId, setWorkoutToDeleteId] = useState<string | null>(null);
 
   const workoutToDelete = workouts.find(w => w.id === workoutToDeleteId);
@@ -53,9 +54,29 @@ const WorkoutList: React.FC<WorkoutListProps> = ({ workouts, onStartWorkout, onC
 
               const exerciseContent = (
                 <ul className="text-gray-300 space-y-1 mb-6">
-                  {workout.exercises.slice(0, 4).map(ex => (
-                    <li key={ex.id} className="truncate">{`${ex.name} (${ex.isCardio ? ex.reps : `${ex.sets}x${ex.reps}`})`}</li>
-                  ))}
+                  {workout.exercises.slice(0, 4).map(ex => {
+                    let statusIcon = null;
+                    if (isInProgress && activeSession) {
+                        const sessionExercise = activeSession.exercises.find(sessionEx => sessionEx.id === ex.id);
+                        if (sessionExercise) {
+                            const completedLogs = sessionExercise.logs.filter(log => log.completed).length;
+                            const totalLogs = sessionExercise.logs.length;
+
+                            if (completedLogs > 0 && completedLogs < totalLogs) {
+                                statusIcon = <span className="text-red-500 font-bold ml-2 text-xl">!</span>;
+                            } else if (completedLogs === totalLogs && totalLogs > 0) {
+                                statusIcon = <span className="text-green-500 font-bold ml-2 text-xl">✓</span>;
+                            }
+                        }
+                    }
+
+                    return (
+                        <li key={ex.id} className="flex items-center">
+                            <span className="truncate">{`${ex.name} (${ex.isCardio ? ex.reps : `${ex.sets}x${ex.reps}`})`}</span>
+                            {statusIcon}
+                        </li>
+                    );
+                  })}
                   {workout.exercises.length > 4 && <li className="text-gray-500">...e mais</li>}
                 </ul>
               );
