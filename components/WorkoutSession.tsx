@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { WorkoutSession, ExerciseSession } from '../types';
 import Timer from './Timer';
 import { DumbbellIcon, PencilIcon, TrashIcon, ChevronDownIcon, MenuIcon, ArrowLeftIcon, ArrowRightIcon } from './icons';
+import InteractiveNumberInput from './InteractiveNumberInput';
 
 interface WorkoutSessionProps {
   session: WorkoutSession;
@@ -311,41 +312,41 @@ const WorkoutSessionComponent: React.FC<WorkoutSessionProps> = ({ session, setSe
             <p className="text-gray-400 mb-4">{`Objetivo: ${currentExercise.sets} séries de ${currentExercise.reps} reps`}</p>
             <div className="space-y-4">
               {currentExercise.logs.map((log, index) => (
-                <div key={log.id} className={`p-4 rounded-lg flex flex-col md:flex-row items-center gap-4 transition-colors duration-500 ${log.completed ? 'bg-green-900/50' : 'bg-gray-700'}`}>
-                  <div className="font-bold text-lg text-blue-400 w-full md:w-1/12 text-center">SÉRIE {index + 1}</div>
-                  <div className="flex-1 w-full">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Peso (kg)</label>
-                    <input
-                      type="number"
-                      disabled={log.completed}
-                      value={log.weight || ''}
-                      onChange={(e) => handleLogChange(currentExercise.id, index, 'weight', parseFloat(e.target.value) || 0)}
-                      className="w-full bg-gray-800 border border-gray-600 rounded-md p-2 text-center focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                      placeholder="0"
-                    />
+                <div key={log.id} className={`p-4 rounded-lg flex flex-col md:flex-row items-center justify-between gap-4 transition-colors duration-500 ${log.completed ? 'bg-green-900/50' : 'bg-gray-700'}`}>
+                  <div className="font-bold text-lg text-blue-400 w-full md:w-auto text-center mb-4 md:mb-0">SÉRIE {index + 1}</div>
+                  <div className="flex-grow flex items-start justify-center gap-4 md:gap-8 w-full">
+                      <div className="flex-1 flex flex-col items-center gap-2">
+                          <label className="block text-sm font-medium text-gray-300">Peso (kg)</label>
+                          <InteractiveNumberInput
+                              value={log.weight}
+                              onChange={(newValue) => handleLogChange(currentExercise.id, index, 'weight', newValue)}
+                              step={2.5}
+                              min={0}
+                              disabled={log.completed}
+                          />
+                      </div>
+                      <div className="flex-1 flex flex-col items-center gap-2">
+                          <label className="block text-sm font-medium text-gray-300">Reps</label>
+                          <InteractiveNumberInput
+                              value={log.reps}
+                              onChange={(newValue) => handleLogChange(currentExercise.id, index, 'reps', Math.round(newValue))}
+                              step={1}
+                              min={0}
+                              disabled={log.completed}
+                          />
+                      </div>
                   </div>
-                  <div className="flex-1 w-full">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Reps</label>
-                    <input
-                      type="number"
-                      disabled={log.completed}
-                      value={log.reps || ''}
-                      onChange={(e) => handleLogChange(currentExercise.id, index, 'reps', parseInt(e.target.value) || 0)}
-                      className="w-full bg-gray-800 border border-gray-600 rounded-md p-2 text-center focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="w-full md:w-auto mt-2 md:mt-0 self-end">
-                    {!log.completed ? (
-                      <button
-                        onClick={() => handleCompleteSet(currentExercise.id, index)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
-                      >
-                        Feito
-                      </button>
-                    ) : (
-                      <div className="w-full text-center text-green-400 font-bold py-2 px-6">Completo ✓</div>
-                    )}
+                  <div className="w-full md:w-auto mt-4 md:mt-0 self-center">
+                      {!log.completed ? (
+                          <button
+                              onClick={() => handleCompleteSet(currentExercise.id, index)}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300"
+                          >
+                              Feito
+                          </button>
+                      ) : (
+                          <div className="w-full text-center text-green-400 font-bold py-3 px-8">Completo ✓</div>
+                      )}
                   </div>
                 </div>
               ))}
